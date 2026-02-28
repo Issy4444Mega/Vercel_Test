@@ -5,13 +5,14 @@ import AwesomeSlider from "react-awesome-slider";
 import "react-awesome-slider/dist/styles.css";
 import "react-awesome-slider/dist/captioned.css";
 import styles from '../styles/Home.module.css'
+import { useRouter } from 'next/router'; 
 
 const buttonStyle = {
   padding: "15px",
   borderRadius: "50%",
   background: "red",
-  opacity: 0.7,
-  fontSize: "20px"
+  fontSize: "20px",
+  marginRight: "10px"
 };
 
 const headerStyle = {
@@ -62,10 +63,13 @@ function Animal(props){
 }
 
 export default function Home() {
+  const router = useRouter(); // <-- инициализация роутера
   const [animals,setAnimals] = React.useState([]);
+
   React.useEffect(()=>{
     fetch('/animals.json').then(data=>data.json()).then(data=>setAnimals(data));
   },[]);
+
   React.useEffect(()=>{
     let user = localStorage.getItem('user');
     if (user===null){
@@ -80,12 +84,11 @@ export default function Home() {
       }
     }
   },[]);
-  
-  function logout(){
-    localStorage.clear();
-    location.reload();
+
+  function goToShops() {
+    router.push('/shops'); 
   }
-  
+
   return (
     <div className={styles.container}>
       <Head>
@@ -94,17 +97,22 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       
-
       <main className={styles.main}>
-        <button onClick={logout}>logout</button>
+        <div style={{ marginBottom: "20px" }}>
+          <button style={buttonStyle} onClick={goToShops}>Магазины</button>
+        </div>
+
         <h1>Petto</h1>
+
         <AwesomeSlider style={{ "--slider-height-percentage": "100%" }}>
           {
-            animals.map((data,i)=><div key={i} style={{ zIndex: 2 }} onClick={()=>sendEmail(data?.email)}>
-            <Animal data={data} />
-          </div>)
+            animals.map((data,i)=>
+              <div key={i} style={{ zIndex: 2 }} onClick={()=>sendEmail(data?.email)}>
+                <Animal data={data} />
+              </div>
+            )
           }
-      </AwesomeSlider>
+        </AwesomeSlider>
       </main>
 
       <footer className={styles.footer}>
